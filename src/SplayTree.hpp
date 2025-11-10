@@ -12,7 +12,6 @@ private:
 
     Node* root = nullptr;
 
-    // ----- Rotations -----
     Node* rotateRight(Node* x) {
         Node* y = x->left;
         x->left = y->right;
@@ -27,23 +26,21 @@ private:
         return y;
     }
 
-    // ----- Splay Operation -----
     Node* splay(Node* h, const T& key) {
         if (!h) return nullptr;
 
         if (key == h->value)
             return h;
 
-        // --- Key is in left subtree ---
+        // left subtree
         if (key < h->value) {
             if (!h->left) return h;
 
-            // Zig-Zig (left-left)
             if (key < h->left->value) {
                 h->left->left = splay(h->left->left, key);
                 h = rotateRight(h);
             }
-            // Zig-Zag (left-right)
+
             else if (key > h->left->value) {
                 h->left->right = splay(h->left->right, key);
                 if (h->left->right)
@@ -53,16 +50,15 @@ private:
             return h->left ? rotateRight(h) : h;
         }
 
-        // --- Key is in right subtree ---
+        // right subtree
         else {
             if (!h->right) return h;
 
-            // Zag-Zag (right-right)
             if (key > h->right->value) {
                 h->right->right = splay(h->right->right, key);
                 h = rotateLeft(h);
             }
-            // Zag-Zig (right-left)
+
             else if (key < h->right->value) {
                 h->right->left = splay(h->right->left, key);
                 if (h->right->left)
@@ -73,7 +69,6 @@ private:
         }
     }
 
-    // ----- Delete entire subtree -----
     void destroy(Node* n) {
         if (!n) return;
         destroy(n->left);
@@ -87,7 +82,6 @@ public:
         destroy(root);
     }
 
-    // ----- Insert -----
     void insert(const T& value) {
         if (!root) {
             root = new Node(value);
@@ -96,7 +90,6 @@ public:
 
         root = splay(root, value);
 
-        // Key already exists → replace value
         if (root->value == value) {
             root->value = value;
             return;
@@ -117,8 +110,6 @@ public:
         root = newNode;
     }
 
-    // ----- Find -----
-    // Returns: Node* (nullptr if not found)
     Node* find(const T& key) {
         if (!root) return nullptr;
         root = splay(root, key);
@@ -126,14 +117,13 @@ public:
         return nullptr;
     }
 
-    // ----- Remove -----
     void remove(const T& key) {
         if (!root) return;
 
         root = splay(root, key);
 
         if (!(root->value == key))
-            return; // not found
+            return;
 
         Node* temp;
         if (!root->left) {

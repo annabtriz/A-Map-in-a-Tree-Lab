@@ -8,7 +8,7 @@ std::string TreeMap::get(const std::string& key) {
     KeyValuePair temp(key, "");
     auto* node = tree_.find(temp);
     if (node == nullptr)
-        return ""; // not found
+        return "";
     return node->value.value();
 }
 
